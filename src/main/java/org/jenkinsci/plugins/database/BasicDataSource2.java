@@ -7,6 +7,8 @@ import java.sql.Driver;
 import java.sql.SQLException;
 
 /**
+ * {@link BasicDataSource} with some convenience methods.
+ *
  * @author Kohsuke Kawaguchi
  */
 public class BasicDataSource2 extends BasicDataSource {
