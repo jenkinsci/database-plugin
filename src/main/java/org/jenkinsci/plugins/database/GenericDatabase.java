@@ -100,6 +100,7 @@ public class GenericDatabase extends Database {
                                          @QueryParameter String password) {
             try {
                 new GenericDatabase(url,driver,username,Secret.fromString(password)).getDataSource();
+                // XXX what about the "SELECT 1" trick from AbstractRemoteDatabaseDescriptor?
                 return FormValidation.ok("OK");
             } catch (SQLException e) {
                 return FormValidation.error(e,"Failed to connect");
