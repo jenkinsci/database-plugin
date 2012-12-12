@@ -24,7 +24,7 @@ public class PerItemDatabaseConfiguration extends GlobalConfiguration {
 
     private static final Logger LOGGER = Logger.getLogger(PerItemDatabaseConfiguration.class.getName());
 
-    private PerItemDatabase database;
+    private volatile PerItemDatabase database;
 
     public PerItemDatabaseConfiguration() {
         load();
@@ -34,22 +34,27 @@ public class PerItemDatabaseConfiguration extends GlobalConfiguration {
         if (database != null) {
             return database;
         }
-        for (PerItemDatabaseDescriptor d : Jenkins.getInstance().getExtensionList(PerItemDatabaseDescriptor.class)) {
-            for (Constructor<?> c : d.clazz.getConstructors()) {
-                if (c.getParameterTypes().length == 0 && c.getAnnotation(DataBoundConstructor.class) != null) {
-                    LOGGER.log(Level.INFO, "no configured database; falling back to {0}", d.getId());
-                    try {
-                        database = (PerItemDatabase) c.newInstance();
-                        save();
-                        return database;
-                    } catch (Exception x) {
-                        // XXX perhaps cache this failure
-                        LOGGER.log(Level.WARNING, "cannot create no-arg instance of " + d.getId(), x);
+        synchronized (this) {
+            if (database != null) {
+                return database;
+            }
+            for (PerItemDatabaseDescriptor d : Jenkins.getInstance().getExtensionList(PerItemDatabaseDescriptor.class)) {
+                for (Constructor<?> c : d.clazz.getConstructors()) {
+                    if (c.getParameterTypes().length == 0 && c.getAnnotation(DataBoundConstructor.class) != null) {
+                        LOGGER.log(Level.INFO, "no configured database; falling back to {0}", d.getId());
+                        try {
+                            database = (PerItemDatabase) c.newInstance();
+                            save();
+                            return database;
+                        } catch (Exception x) {
+                            // XXX perhaps cache this failure
+                            LOGGER.log(Level.WARNING, "cannot create no-arg instance of " + d.getId(), x);
+                        }
                     }
                 }
             }
+            return null;
         }
-        return null;
     }
 
     public void setDatabase(PerItemDatabase database) {
