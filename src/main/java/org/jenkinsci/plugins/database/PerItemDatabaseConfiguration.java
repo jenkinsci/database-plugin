@@ -39,7 +39,9 @@ public class PerItemDatabaseConfiguration extends GlobalConfiguration {
                 if (c.getParameterTypes().length == 0 && c.getAnnotation(DataBoundConstructor.class) != null) {
                     LOGGER.log(Level.INFO, "no configured database; falling back to {0}", d.getId());
                     try {
-                        return database = (PerItemDatabase) c.newInstance();
+                        database = (PerItemDatabase) c.newInstance();
+                        save();
+                        return database;
                     } catch (Exception x) {
                         // XXX perhaps cache this failure
                         LOGGER.log(Level.WARNING, "cannot create no-arg instance of " + d.getId(), x);
