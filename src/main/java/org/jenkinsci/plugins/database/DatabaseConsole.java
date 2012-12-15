@@ -11,8 +11,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Collections;
 import jenkins.model.Jenkins;
-import org.jenkinsci.plugins.database.PerItemDatabase;
-import org.jenkinsci.plugins.database.PerItemDatabaseConfiguration;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.HttpResponses;
 import org.kohsuke.stapler.QueryParameter;

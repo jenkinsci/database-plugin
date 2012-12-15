@@ -15,7 +15,7 @@ import java.sql.Statement;
  * @author Kohsuke Kawaguchi
  */
 @Extension
-public class DatabaseConsole implements RootAction {
+public class RootDatabaseConsole implements RootAction {
     @Inject
     Sample sample;
 

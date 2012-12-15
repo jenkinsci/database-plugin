@@ -1,15 +1,21 @@
-package org.jenkinsci.plugins.database.DatabaseConsole
+package org.jenkinsci.plugins.database.RootDatabaseConsole
 
 import java.sql.ResultSet;
 
 def f = namespace(lib.FormTagLib)
 def l = namespace(lib.LayoutTagLib)
 
-// XXX require RUN_SCRIPTS
 l.layout{
     l.main_panel {
         form(method:"post",action:"execute") {
             raw("""
+<p>
+    Go to <a href="../configure">the system config page</a> and configure
+    a valid database connection. Also try installing some database driver plugins,
+    such as <tt>database-h2</tt>.
+</p><p>
+    Then come back to this console and execute arbitrary SQL against the configured database.
+</p>
 <h2>SQL</h2>
 <textarea name=sql style='width:100%; height:5em'></textarea>
             """)
@@ -46,3 +52,4 @@ l.layout{
         }
     }
 }
+
