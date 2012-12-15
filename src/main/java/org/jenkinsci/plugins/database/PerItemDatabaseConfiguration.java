@@ -2,24 +2,24 @@ package org.jenkinsci.plugins.database;
 
 import hudson.Extension;
 import hudson.model.TopLevelItem;
-import java.lang.reflect.Constructor;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.sql.DataSource;
 import jenkins.model.GlobalConfiguration;
-import static jenkins.model.GlobalConfiguration.all;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.sql.DataSource;
+import java.lang.reflect.Constructor;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Allows user to select, and if necessary, configure the preferred {@link PerItemDatabase}.
  */
-@Extension
+@Extension(ordinal=GlobalDatabaseConfiguration.ORDINAL+0.005f)
 public class PerItemDatabaseConfiguration extends GlobalConfiguration {
 
     private static final Logger LOGGER = Logger.getLogger(PerItemDatabaseConfiguration.class.getName());
