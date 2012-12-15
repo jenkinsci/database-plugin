@@ -13,6 +13,8 @@ import javax.annotation.CheckForNull;
  * <p>
  * If a plugin wishes to store some information globally to RDBMS, and if the data can co-exist with
  * the data from other plugins, use {@linkplain #getDatabase() this shared database instance}.
+ * In cases where a plugin wants to store data in its own database separate from this shared instance,
+ * you can do so by using {@link Database} directly.
  *
  * <p>
  * There's also {@link PerItemDatabaseConfiguration}, which provides separate database for information
