@@ -10,7 +10,16 @@ import javax.annotation.CheckForNull;
 /**
  * Provides the system-wide {@link Database} that's open for plugins to store arbitrary information.
  *
+ * <p>
+ * If a plugin wishes to store some information globally to RDBMS, and if the data can co-exist with
+ * the data from other plugins, use {@linkplain #getDatabase() this shared database instance}.
+ *
+ * <p>
+ * There's also {@link PerItemDatabaseConfiguration}, which provides separate database for information
+ * local to a specific job.
+ *
  * @author Kohsuke Kawaguchi
+ * @see PerItemDatabaseConfiguration
  */
 @Extension(ordinal=GlobalDatabaseConfiguration.ORDINAL)
 public class GlobalDatabaseConfiguration extends GlobalConfiguration {
@@ -20,6 +29,9 @@ public class GlobalDatabaseConfiguration extends GlobalConfiguration {
         load();
     }
 
+    /**
+     * This is the configured {@link Database} instance, or null in case none is configured yet.
+     */
     public @CheckForNull Database getDatabase() {
         return database;
     }
