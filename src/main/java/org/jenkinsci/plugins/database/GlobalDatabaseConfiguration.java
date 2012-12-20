@@ -52,5 +52,9 @@ public class GlobalDatabaseConfiguration extends GlobalConfiguration {
         return true;
     }
 
+    public static GlobalDatabaseConfiguration get() {
+        return all().get(GlobalDatabaseConfiguration.class);
+    }
+
     /*package*/ static final double ORDINAL = -33;
 }
