@@ -1,6 +1,6 @@
 package org.jenkinsci.plugins.database.jpa;
 
-import com.thoughtworks.xstream.core.util.ConcurrentWeakHashMap;
+import com.google.common.collect.MapMaker;
 import hudson.Extension;
 import hudson.model.TopLevelItem;
 import jenkins.model.Jenkins;
@@ -40,7 +40,7 @@ public class PersistenceService {
 
     private final AtomicReference<EMFCache<Database>> globalCache = new AtomicReference<EMFCache<Database>>();
     private final ConcurrentMap<TopLevelItem,EMFCache<PerItemDatabase>> perItemCache =
-            new ConcurrentWeakHashMap<TopLevelItem, EMFCache<PerItemDatabase>>();
+            new MapMaker().weakKeys().makeMap();
 
     public EntityManagerFactory createEntityManagerFactory(DataSource dataSource, List<Class> classes) {
         return new HibernatePersistence().createContainerEntityManagerFactory(new PersistenceUnitInfoImpl(
