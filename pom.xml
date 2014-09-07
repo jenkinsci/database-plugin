@@ -79,6 +79,12 @@
       <artifactId>hibernate-core</artifactId>
       <version>3.6.10.Final</version>
     </dependency>
+    <dependency>
+      <artifactId>stapler</artifactId>
+      <groupId>org.kohsuke.stapler</groupId>
+      <type>jar</type>
+      <version>1.228</version>
+    </dependency>
   </dependencies>
 
   <repositories>
