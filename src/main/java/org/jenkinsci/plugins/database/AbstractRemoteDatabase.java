@@ -19,27 +19,28 @@ import org.kohsuke.stapler.QueryParameter;
  * @author Kohsuke Kawaguchi
  */
 public abstract class AbstractRemoteDatabase extends Database {
-  /**
-   * Host name + optional port (in the "host[:port]" format)
-   */
-  public final String hostname;
-  public final String database;
-  public final String username;
-  public final Secret password;
+
+    /**
+     * Host name + optional port (in the "host[:port]" format)
+     */
+    public final String hostname;
+    public final String database;
+    public final String username;
+    public final Secret password;
     public String validationQuery;
 
-  public final String properties;
+    public final String properties;
 
-  private transient DataSource source;
+    private transient DataSource source;
 
-  @DataBoundConstructor
+    @DataBoundConstructor
     public AbstractRemoteDatabase(String hostname, String database, String username, Secret password, String properties) {
-    this.hostname = hostname;
-    this.database = database;
-    this.username = username;
-    this.password = password;
-    this.properties = properties;
-  }
+        this.hostname = hostname;
+        this.database = database;
+        this.username = username;
+        this.password = password;
+        this.properties = properties;
+    }
 
     @DataBoundSetter
     public void setValidationQuery(@QueryParameter String validationQuery) {
@@ -50,30 +51,30 @@ public abstract class AbstractRemoteDatabase extends Database {
         return validationQuery;
     }
 
-  protected abstract Class<? extends Driver> getDriverClass ();
+    protected abstract Class<? extends Driver> getDriverClass();
 
-  protected abstract String getJdbcUrl ();
+    protected abstract String getJdbcUrl();
 
-  @Override
-  public synchronized DataSource getDataSource () throws SQLException {
-    if ( source == null ) {
-      BasicDataSource2 fac = new BasicDataSource2 ();
-      fac.setDriverClass ( getDriverClass () );
-      fac.setUrl ( getJdbcUrl () );
-      fac.setUsername ( username );
-      fac.setPassword ( Secret.toString ( password ) );
+    @Override
+    public synchronized DataSource getDataSource() throws SQLException {
+        if (source==null) {
+            BasicDataSource2 fac = new BasicDataSource2();
+            fac.setDriverClass(getDriverClass());
+            fac.setUrl(getJdbcUrl());
+            fac.setUsername(username);
+            fac.setPassword(Secret.toString(password));
             fac.setValidationQuery(validationQuery);
 
-      try {
+            try {
                 for (Map.Entry e : Util.loadProperties(Util.fixNull(properties)).entrySet()) {
                     fac.addConnectionProperty(e.getKey().toString(), e.getValue().toString());
-        }
-      } catch ( IOException e ) {
-        throw new SQLException ( "Invalid properties", e );
-      }
+                }
+            } catch (IOException e) {
+                throw new SQLException("Invalid properties",e);
+            }
 
-      source = fac.createDataSource ();
+            source = fac.createDataSource();
+        }
+        return source;
     }
-    return source;
-  }
 }
