@@ -3,7 +3,7 @@ package org.jenkinsci.plugins.database.AbstractRemoteDatabase;
 def f = namespace(lib.FormTagLib)
 
 f.entry(field:"hostname", title:_("Host Name")) {
-  f.textbox()
+    f.textbox()
 }
 f.entry(field:"database", title:_("Database")) {
   f.textbox()
