@@ -2,12 +2,13 @@ package org.jenkinsci.plugins.database;
 
 import hudson.Util;
 import hudson.util.Secret;
+import org.kohsuke.stapler.DataBoundConstructor;
+
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Map;
-import javax.sql.DataSource;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
