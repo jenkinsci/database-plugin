@@ -14,6 +14,9 @@ f.entry(field:"username", title:_("Username")) {
 f.entry(field:"password", title:_("Password")) {
     f.password()
 }
+f.entry(field:"validationQuery", title:_("Validation Query")) {
+  f.textarea()
+}
 f.advanced {
     f.entry(field:"properties", title:_("Additional Properties")) {
         f.textarea()

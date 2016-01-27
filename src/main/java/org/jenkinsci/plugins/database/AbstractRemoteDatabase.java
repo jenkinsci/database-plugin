@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Map;
+import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.QueryParameter;
 
 /**
  * Partial default implementation for typical JDBC connector that talks to a remote server
@@ -17,6 +19,7 @@ import java.util.Map;
  * @author Kohsuke Kawaguchi
  */
 public abstract class AbstractRemoteDatabase extends Database {
+
     /**
      * Host name + optional port (in the "host[:port]" format)
      */
@@ -24,6 +27,7 @@ public abstract class AbstractRemoteDatabase extends Database {
     public final String database;
     public final String username;
     public final Secret password;
+    public String validationQuery;
 
     public final String properties;
 
@@ -38,6 +42,15 @@ public abstract class AbstractRemoteDatabase extends Database {
         this.properties = properties;
     }
 
+    @DataBoundSetter
+    public void setValidationQuery(@QueryParameter String validationQuery) {
+        this.validationQuery = validationQuery;
+    }
+
+    public String getValidationQuery() {
+        return validationQuery;
+    }
+
     protected abstract Class<? extends Driver> getDriverClass();
 
     protected abstract String getJdbcUrl();
@@ -50,6 +63,7 @@ public abstract class AbstractRemoteDatabase extends Database {
             fac.setUrl(getJdbcUrl());
             fac.setUsername(username);
             fac.setPassword(Secret.toString(password));
+            fac.setValidationQuery(validationQuery);
 
             try {
                 for (Map.Entry e : Util.loadProperties(Util.fixNull(properties)).entrySet()) {
