@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.565.2</version>
+    <version>1.609.1</version>
   </parent>
 
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -11,6 +11,22 @@
   <version>1.4.2-SNAPSHOT</version>
   <packaging>hpi</packaging>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Database+Plugin</url>
+
+  <properties>
+    <workflow.version>1.14</workflow.version>
+  </properties>
+
+  <developers>
+    <developer>
+      <id>davidvanlaatum</id>
+      <name>David van Laatum</name>
+      <roles>
+        <role>developer</role>
+        <role>maintainer</role>
+      </roles>
+      <timezone>9.5</timezone>
+    </developer>
+  </developers>
 
   <build>
     <plugins>
@@ -88,6 +104,24 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>5.2.4.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-multibranch</artifactId>
+      <version>${workflow.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-step-api</artifactId>
+      <version>${workflow.version}</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.plugins.workflow</groupId>
+      <artifactId>workflow-aggregator</artifactId>
+      <version>${workflow.version}</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 
