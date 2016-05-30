@@ -33,7 +33,6 @@ public abstract class AbstractRemoteDatabase extends Database {
 
     private transient DataSource source;
 
-    @DataBoundConstructor
     public AbstractRemoteDatabase(String hostname, String database, String username, Secret password, String properties) {
         this.hostname = hostname;
         this.database = database;
