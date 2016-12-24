@@ -1,9 +1,12 @@
 package org.jenkinsci.plugins.database;
 
+import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.ServerConnector;
 import org.jvnet.hudson.test.HudsonHomeLoader;
 import org.jvnet.hudson.test.HudsonTestCase;
 import org.kohsuke.stapler.MetaClass;
-import org.mortbay.jetty.bio.SocketConnector;
 
 import java.io.File;
 
@@ -26,9 +29,12 @@ public class Main extends HudsonTestCase {
     }
 
     public void test1() throws Exception {
-        SocketConnector connector = new SocketConnector();
+        ServerConnector connector = new ServerConnector(server);
         connector.setPort(localPort=8888);
-        connector.setHeaderBufferSize(12 * 1024); // use a bigger buffer as Stapler traces can get pretty large on deeply nested URL
+        HttpConfiguration config = connector.getConnectionFactory(HttpConnectionFactory.class).getHttpConfiguration();
+        // use a bigger buffer as Stapler traces can get pretty large on deeply nested URL
+        config.setRequestHeaderSize(12 * 1024);
+
         server.addConnector(connector);
         connector.start();
 
