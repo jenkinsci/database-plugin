@@ -34,7 +34,7 @@ import static java.util.Objects.requireNonNull;
 
 public class DatabaseConnectionStep extends AbstractStepImpl {
 
-  @Extension
+  @Extension(optional = true)
   public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl ();
   private static final Logger LOG = Logger.getLogger ( DatabaseConnectionStep.class.getName () );
   private DatabaseType type;

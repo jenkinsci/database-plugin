@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SQLStep extends AbstractStepImpl {
-  @Extension
+  @Extension(optional = true)
   public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl ();
   private static final Logger LOG = Logger.getLogger ( SQLStep.class.getName () );
   private String sql;
