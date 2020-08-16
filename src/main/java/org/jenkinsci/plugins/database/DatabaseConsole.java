@@ -36,26 +36,19 @@ public class DatabaseConsole implements Action {
     }
 
     private boolean enabled() {
-        return Jenkins.getInstance().hasPermission(Jenkins.RUN_SCRIPTS) && PerItemDatabaseConfiguration.findOrNull() != null;
+        return Jenkins.get().hasPermission(Jenkins.ADMINISTER) && PerItemDatabaseConfiguration.findOrNull() != null;
     }
 
     public HttpResponse doExecute(@QueryParameter String sql) throws SQLException {
-        Jenkins.getInstance().checkPermission(Jenkins.RUN_SCRIPTS);
+        Jenkins.get().checkPermission(Jenkins.ADMINISTER);
         PerItemDatabase db = PerItemDatabaseConfiguration.find();
-        Connection con = db.getDataSource(p).getConnection();
-        try {
-            Statement s = con.createStatement();
-            try {
-                if (s.execute(sql)) {
-                    return HttpResponses.forwardToView(this,"index").with("r",s.getResultSet());
-                } else {
-                    return HttpResponses.forwardToView(this,"index").with("message","OK");
-                }
-            } finally {
-                // XXX clone to r/o flyweight object and return instead: s.close();
+        
+        try(Connection con = db.getDataSource(p).getConnection(); Statement s = con.createStatement()) {
+            if (s.execute(sql)) {
+                return HttpResponses.forwardToView(this,"index").with("r",s.getResultSet());
+            } else {
+                return HttpResponses.forwardToView(this,"index").with("message","OK");
             }
-        } finally {
-            // XXX con.close();
         }
     }
 

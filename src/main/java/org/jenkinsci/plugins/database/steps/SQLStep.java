@@ -68,6 +68,8 @@ public class SQLStep extends AbstractStepImpl {
 
   public static class Execution extends AbstractSynchronousNonBlockingStepExecution<List<Map<String, Object>>> {
 
+    private static final long serialVersionUID = 1L;
+
     @StepContextParameter
     private transient Run build;
     @StepContextParameter

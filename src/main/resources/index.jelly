@@ -1,3 +1,4 @@
+<?jelly escape-by-default='true'?>
 <div>
   Library plugin that adds a database connectivity abstraction for other plugins.
 </div>

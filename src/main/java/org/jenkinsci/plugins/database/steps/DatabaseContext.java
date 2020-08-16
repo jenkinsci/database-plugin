@@ -5,8 +5,10 @@ import java.sql.Connection;
 import java.text.MessageFormat;
 
 public class DatabaseContext implements Serializable {
+  
+  private static final long serialVersionUID = 1L;
 
-  private final transient DatabaseContext parent;
+  private final DatabaseContext parent;
   private final transient Connection connection;
   private final String id;
 
