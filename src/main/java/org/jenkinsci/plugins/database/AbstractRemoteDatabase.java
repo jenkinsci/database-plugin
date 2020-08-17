@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.database;
 
 import hudson.Util;
 import hudson.util.Secret;
+import java.io.Serializable;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.sql.DataSource;
@@ -18,7 +19,9 @@ import org.kohsuke.stapler.QueryParameter;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class AbstractRemoteDatabase extends Database {
+public abstract class AbstractRemoteDatabase extends Database implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Host name + optional port (in the "host[:port]" format)
