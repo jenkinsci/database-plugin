@@ -68,7 +68,8 @@ public class PerItemDatabaseConfiguration extends GlobalConfiguration {
     }
 
     public static @CheckForNull PerItemDatabase findOrNull() {
-        return all().get(PerItemDatabaseConfiguration.class).getDatabase();
+        final PerItemDatabaseConfiguration database = all().get(PerItemDatabaseConfiguration.class);
+        return database != null ? database.getDatabase(): null;
     }
 
     /**

@@ -2,6 +2,7 @@ package org.jenkinsci.plugins.database;
 
 import hudson.util.FormValidation;
 import hudson.util.Secret;
+import java.sql.Statement;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.sql.DataSource;
@@ -30,9 +31,9 @@ public abstract class AbstractRemoteDatabaseDescriptor extends DatabaseDescripto
         try {
             Database db = clazz.getConstructor(String.class,String.class,String.class,Secret.class,String.class).newInstance(hostname, database, username, Secret.fromString(password), properties);
             DataSource ds = db.getDataSource();
-            Connection con = ds.getConnection();
-            con.createStatement().execute("SELECT 1");
-            con.close();
+            try (Connection con = ds.getConnection(); Statement statement = con.createStatement()) {
+                statement.execute("SELECT 1");
+            }
             return FormValidation.ok("OK");
         } catch (SQLException e) {
             return FormValidation.error(e,"Failed to connect to "+getDisplayName());

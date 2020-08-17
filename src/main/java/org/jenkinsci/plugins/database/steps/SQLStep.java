@@ -27,7 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SQLStep extends AbstractStepImpl {
-  @Extension
+  @Extension(optional = true)
   public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl ();
   private static final Logger LOG = Logger.getLogger ( SQLStep.class.getName () );
   private String sql;
@@ -67,6 +67,8 @@ public class SQLStep extends AbstractStepImpl {
   }
 
   public static class Execution extends AbstractSynchronousNonBlockingStepExecution<List<Map<String, Object>>> {
+
+    private static final long serialVersionUID = 1L;
 
     @StepContextParameter
     private transient Run build;

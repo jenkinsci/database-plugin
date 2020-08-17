@@ -4,7 +4,7 @@ import com.google.common.collect.MapMaker;
 import hudson.Extension;
 import hudson.model.TopLevelItem;
 import jenkins.model.Jenkins;
-import org.hibernate.ejb.HibernatePersistence;
+import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.jenkinsci.plugins.database.Database;
 import org.jenkinsci.plugins.database.GlobalDatabaseConfiguration;
 import org.jenkinsci.plugins.database.PerItemDatabase;
@@ -43,7 +43,7 @@ public class PersistenceService {
             new MapMaker().weakKeys().makeMap();
 
     public EntityManagerFactory createEntityManagerFactory(DataSource dataSource, List<Class> classes) {
-        return new HibernatePersistence().createContainerEntityManagerFactory(new PersistenceUnitInfoImpl(
+        return new HibernatePersistenceProvider().createContainerEntityManagerFactory(new PersistenceUnitInfoImpl(
                 dataSource, classes, jenkins.pluginManager.uberClassLoader), null);
     }
 
@@ -108,7 +108,7 @@ public class PersistenceService {
     /**
      * For atomic update for {@link EntityManagerFactory}.
      */
-    class EMFCache<K> {
+    static class EMFCache<K> {
         final K cacheKey;
         final EntityManagerFactory factory;
 

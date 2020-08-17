@@ -6,7 +6,10 @@ import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.TopLevelItem;
 import hudson.util.ListBoxModel;
+import java.util.Objects;
+import org.jenkinsci.plugins.database.Database;
 import org.jenkinsci.plugins.database.GlobalDatabaseConfiguration;
+import org.jenkinsci.plugins.database.PerItemDatabase;
 import org.jenkinsci.plugins.database.PerItemDatabaseConfiguration;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
 import org.jenkinsci.plugins.workflow.steps.AbstractStepExecutionImpl;
@@ -27,9 +30,11 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static java.util.Objects.requireNonNull;
+
 public class DatabaseConnectionStep extends AbstractStepImpl {
 
-  @Extension
+  @Extension(optional = true)
   public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl ();
   private static final Logger LOG = Logger.getLogger ( DatabaseConnectionStep.class.getName () );
   private DatabaseType type;
@@ -63,6 +68,8 @@ public class DatabaseConnectionStep extends AbstractStepImpl {
   }
 
   public static class Execution extends AbstractStepExecutionImpl {
+
+    private static final long serialVersionUID = 1L;
 
     @StepContextParameter
     private transient Run<?, ?> build;
@@ -112,13 +119,18 @@ public class DatabaseConnectionStep extends AbstractStepImpl {
         switch ( step.type ) {
           default:
           case GLOBAL:
-            connection = globalDatabaseConfiguration.getDatabase ().getDataSource ().getConnection ();
+            final Database database = globalDatabaseConfiguration.getDatabase();
+            if (database != null) {
+              connection = database.getDataSource().getConnection();
+            }
             break;
           case PERITEM:
             if ( build.getParent () instanceof TopLevelItem ) {
-              connection =
-                  perItemDatabaseConfiguration.getDatabase ().getDataSource ( (TopLevelItem) build.getParent () )
-                      .getConnection ();
+              final PerItemDatabase perItemDatabase = perItemDatabaseConfiguration.getDatabase();
+              if (perItemDatabase != null) {
+                connection = perItemDatabase.getDataSource((TopLevelItem) build.getParent())
+                        .getConnection();
+              }
             } else {
               throw new FailedToGetDatabaseException (
                   "Failed to get per item database build.getParent is not instance of TopLevelItem? " +
