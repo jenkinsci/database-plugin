@@ -67,14 +67,10 @@ In the config.{groovy,jelly}, use the `f:dropdownDescriptorSelector` tag
 to allow the user to select a database (see
 [example](https://github.com/jenkinsci/database-plugin/blob/master/src/test/resources/org/jenkinsci/plugins/database/Sample/config.groovy)).
 
-The database plugin contains a complete example in its `src/test`
-directory. Clone the repository and run `mvn -Prun`, then open
-<http://localhost:8888/database-console/> to see this example in action.
-
 ### JPA support
 
 This plugin exposes it through [JPA 2.0
-API](http://en.wikipedia.org/wiki/Java_Persistence_API) (internally, it
+API](https://en.wikipedia.org/wiki/Java_Persistence_API) (internally, it
 uses Hibernate but please do not rely on this fact if you can as it may
 change.) The entry point to the JPA support is the `PersistenceService`
 class, and this exposes methods for obtaining `EntityManagerFactory` for
