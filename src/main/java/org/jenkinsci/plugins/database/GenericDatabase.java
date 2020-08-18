@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.File;
 import java.sql.SQLException;
+import org.kohsuke.stapler.verb.POST;
 
 /**
  * {@link Database} implementation that allows the user to specify arbitrary JDBC connection string.
@@ -82,7 +83,10 @@ public class GenericDatabase extends Database {
             return loader;
         }
 
+        @POST
         public FormValidation doCheckDriver(@QueryParameter String value) {
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            
             if (value.length()==0)
                 return FormValidation.ok(); // no value typed yet.
 
@@ -94,10 +98,13 @@ public class GenericDatabase extends Database {
             }
         }
 
+        @POST
         public FormValidation doValidate(@QueryParameter String driver,
                                          @QueryParameter String url,
                                          @QueryParameter String username,
                                          @QueryParameter String password) {
+            Jenkins.get().checkPermission(Jenkins.ADMINISTER);
+            
             try {
                 new GenericDatabase(url,driver,username,Secret.fromString(password)).getDataSource();
                 // XXX what about the "SELECT 1" trick from AbstractRemoteDatabaseDescriptor?
