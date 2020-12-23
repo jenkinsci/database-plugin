@@ -126,11 +126,6 @@ host+database+username+password+properties combo, see [H2 Database
 plugin](https://plugins.jenkins.io/database-h2/)
 source code as an example.
 
-Add the test jar of the database plugin to your driver plugin, so that
-you can use the debug database console feature during `mvn hpi:run`.
-This lets you interactively test your driver plugin and its
-configuration screen.
-
 ## Contributing
 
 Refer to our [contribution guidelines](https://github.com/jenkinsci/.github/blob/master/CONTRIBUTING.md)
