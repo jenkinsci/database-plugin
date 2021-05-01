@@ -24,15 +24,24 @@ public class GenericDatabase extends Database {
     public final String username;
     public final Secret password;
     public final String url;
+    public final int initialSize;
+    public final int maxTotal;
+    public final int maxIdle;
+    public final int minIdle;
 
     private transient DataSource source;
 
     @DataBoundConstructor
-    public GenericDatabase(String url, String driver, String username, Secret password) {
+    public GenericDatabase(String url, String driver, String username, Secret password,
+                           int initialSize, int maxTotal, int maxIdle, int minIdle) {
         this.url = url;
         this.driver = driver;
         this.username = username;
         this.password = password;
+        this.initialSize = initialSize;
+        this.maxTotal = maxTotal;
+        this.maxIdle = maxIdle;
+        this.minIdle = minIdle;
     }
 
     @Override
@@ -44,6 +53,10 @@ public class GenericDatabase extends Database {
             source.setUrl(url);
             source.setUsername(username);
             source.setPassword(Secret.toString(password));
+            source.setInitialSize(initialSize);
+            source.setMaxTotal(maxTotal);
+            source.setMaxIdle(maxIdle);
+            source.setMinIdle(minIdle);
             this.source = source.createDataSource();
         }
         return source;
@@ -102,11 +115,15 @@ public class GenericDatabase extends Database {
         public FormValidation doValidate(@QueryParameter String driver,
                                          @QueryParameter String url,
                                          @QueryParameter String username,
-                                         @QueryParameter Secret password) {
+                                         @QueryParameter Secret password,
+                                         @QueryParameter int initialSize,
+                                         @QueryParameter int maxTotal,
+                                         @QueryParameter int maxIdle,
+                                         @QueryParameter int minIdle) {
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
             
             try {
-                new GenericDatabase(url,driver,username, password).getDataSource();
+                new GenericDatabase(url,driver,username, password, initialSize, maxTotal, maxIdle, minIdle).getDataSource();
                 // XXX what about the "SELECT 1" trick from AbstractRemoteDatabaseDescriptor?
                 return FormValidation.ok("OK");
             } catch (SQLException e) {
