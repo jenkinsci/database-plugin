@@ -16,16 +16,16 @@ f.entry(field:"password",title:_("Password")) {
 }
 f.advanced {
     f.entry(field: "initialSize", title: _("Initial Size"), help: descriptor.getHelpFile('initialSize')) {
-        f.number(clazz: "number", min: 0, max: 65535, step: 1, default: 0)
+        f.number(clazz: "number", min: 0, max: 65535, step: 1, default: "${descriptor.defaultInitialSize}")
     }
     f.entry(field: "maxTotal", title: _("Max Total"), help: descriptor.getHelpFile('maxTotal')) {
-        f.number(clazz: "number", min: -1, max: 65535, step: 1, default: 8)
-    }
-    f.entry(field: "minIdle", title: _("Min Idle"), help: descriptor.getHelpFile('minIdle')) {
-        f.number(clazz: "number", min: 0, max: 65535, step: 1, default: 0)
+        f.number(clazz: "number", min: -1, max: 65535, step: 1, default: "${descriptor.defaultMaxTotal}")
     }
     f.entry(field: "maxIdle", title: _("Max Idle"), help: descriptor.getHelpFile('maxIdle')) {
-        f.number(clazz: "number", min: -1, max: 65535, step: 1, default: 8)
+        f.number(clazz: "number", min: -1, max: 65535, step: 1, default: "${descriptor.defaultMaxIdle}")
+    }
+    f.entry(field: "minIdle", title: _("Min Idle"), help: descriptor.getHelpFile('minIdle')) {
+        f.number(clazz: "number", min: 0, max: 65535, step: 1, default: "${descriptor.defaultMinIdle}")
     }
 }
 f.block() {
