@@ -29,5 +29,5 @@ f.advanced {
     }
 }
 f.block() {
-    f.validateButton(method:"validate",title:_("Test Connection"),with:"driver,url,username,password,maxTotal")
+    f.validateButton(method:"validate",title:_("Test Connection"),with:"driver,url,username,password")
 }
