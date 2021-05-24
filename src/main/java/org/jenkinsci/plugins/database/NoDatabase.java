@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Pseudo instance in case the configuration of {@link Database} needs a "(none)" option.
  *
- * You can define your <tt>config.groovy</tt> as follows to have "(none)" appear as the default.
+ * You can define your <code>config.groovy</code> as follows to have "(none)" appear as the default.
  * Also, see {@link GlobalDatabaseConfiguration#setDatabase(Database)} for the necessary fix up
  * on the setter (or in the constructor.)
  *
