@@ -2,7 +2,7 @@ package org.jenkinsci.plugins.database.GenericDatabase
 
 def f = namespace(lib.FormTagLib)
 
-f.entry(field:"driver",title:_("JDBC Driver Class"), help: descriptor.getHelpFile('driver')) {
+f.entry(field:"driver",title:_("JDBC Driver Class")) {
     f.textbox()
 }
 f.entry(field:"url",title:_("JDBC Connection URL")) {
@@ -15,16 +15,16 @@ f.entry(field:"password",title:_("Password")) {
     f.password()
 }
 f.advanced {
-    f.entry(field: "initialSize", title: _("Initial Size"), help: descriptor.getHelpFile('initialSize')) {
+    f.entry(field: "initialSize", title: _("Initial Size")) {
         f.number(clazz: "number", min: 0, max: 65535, step: 1, default: "${descriptor.defaultInitialSize}")
     }
-    f.entry(field: "maxTotal", title: _("Max Total"), help: descriptor.getHelpFile('maxTotal')) {
+    f.entry(field: "maxTotal", title: _("Max Total")) {
         f.number(clazz: "number", min: -1, max: 65535, step: 1, default: "${descriptor.defaultMaxTotal}")
     }
-    f.entry(field: "maxIdle", title: _("Max Idle"), help: descriptor.getHelpFile('maxIdle')) {
+    f.entry(field: "maxIdle", title: _("Max Idle")) {
         f.number(clazz: "number", min: -1, max: 65535, step: 1, default: "${descriptor.defaultMaxIdle}")
     }
-    f.entry(field: "minIdle", title: _("Min Idle"), help: descriptor.getHelpFile('minIdle')) {
+    f.entry(field: "minIdle", title: _("Min Idle")) {
         f.number(clazz: "number", min: 0, max: 65535, step: 1, default: "${descriptor.defaultMinIdle}")
     }
 }
