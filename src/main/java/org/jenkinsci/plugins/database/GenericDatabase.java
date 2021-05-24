@@ -6,11 +6,15 @@ import hudson.util.Secret;
 import jenkins.model.Jenkins;
 import org.apache.tools.ant.AntClassLoader;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import org.kohsuke.stapler.verb.POST;
 
@@ -25,6 +29,11 @@ public class GenericDatabase extends Database {
     public final Secret password;
     public final String url;
 
+    private Integer initialSize = DescriptorImpl.defaultInitialSize;
+    private Integer maxTotal = DescriptorImpl.defaultMaxTotal;
+    private Integer maxIdle = DescriptorImpl.defaultMaxIdle;
+    private Integer minIdle = DescriptorImpl.defaultMinIdle;
+
     private transient DataSource source;
 
     @DataBoundConstructor
@@ -33,6 +42,46 @@ public class GenericDatabase extends Database {
         this.driver = driver;
         this.username = username;
         this.password = password;
+    }
+
+    @Nonnull
+    public Integer getInitialSize() {
+        return initialSize;
+    }
+
+    @DataBoundSetter
+    public void setInitialSize(final Integer initialSize) {
+        this.initialSize = initialSize == null ? DescriptorImpl.defaultInitialSize : initialSize;
+    }
+
+    @Nonnull
+    public Integer getMaxTotal() {
+        return maxTotal;
+    }
+
+    @DataBoundSetter
+    public void setMaxTotal(final Integer maxTotal) {
+        this.maxTotal = maxTotal == null ? DescriptorImpl.defaultMaxTotal : maxTotal;
+    }
+
+    @Nonnull
+    public Integer getMaxIdle() {
+        return maxIdle;
+    }
+
+    @DataBoundSetter
+    public void setMaxIdle(final Integer maxIdle) {
+        this.maxIdle = maxIdle == null ? DescriptorImpl.defaultMaxIdle : maxIdle;
+    }
+
+    @Nonnull
+    public Integer getMinIdle() {
+        return minIdle;
+    }
+
+    @DataBoundSetter
+    public void setMinIdle(final Integer minIdle) {
+        this.minIdle = minIdle == null ? DescriptorImpl.defaultMinIdle : minIdle;
     }
 
     @Override
@@ -44,6 +93,10 @@ public class GenericDatabase extends Database {
             source.setUrl(url);
             source.setUsername(username);
             source.setPassword(Secret.toString(password));
+            source.setInitialSize(initialSize);
+            source.setMaxTotal(maxTotal);
+            source.setMaxIdle(maxIdle);
+            source.setMinIdle(minIdle);
             this.source = source.createDataSource();
         }
         return source;
@@ -57,6 +110,11 @@ public class GenericDatabase extends Database {
     @Extension(ordinal = -1000) // low priority because this is generic
     public static class DescriptorImpl extends DatabaseDescriptor {
         private transient AntClassLoader loader;
+
+        public static final Integer defaultInitialSize = 0;
+        public static final Integer defaultMaxTotal = 8;
+        public static final Integer defaultMaxIdle = 8;
+        public static final Integer defaultMinIdle = 0;
 
         @Override
         public String getDisplayName() {
@@ -86,7 +144,7 @@ public class GenericDatabase extends Database {
         @POST
         public FormValidation doCheckDriver(@QueryParameter String value) {
             Jenkins.get().checkPermission(Jenkins.ADMINISTER);
-            
+
             if (value.length()==0)
                 return FormValidation.ok(); // no value typed yet.
 
