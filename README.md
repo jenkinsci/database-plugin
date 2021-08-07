@@ -79,8 +79,7 @@ choice.
 
 Because there are several different databases, involved, `@Entity`
 annotation alone is not sufficient. For persisted classes meant for the
-global database, please put `@GlobalTable` in addition to `@Entity`. For
-the per-item database, please put `@PerItemTable`.
+global database, please put `@GlobalTable` in addition to `@Entity`.
 
 The following code shows how to use this to persiste a new row:
 
