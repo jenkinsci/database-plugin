@@ -1,14 +1,10 @@
 package org.jenkinsci.plugins.database.jpa;
 
-import com.google.common.collect.MapMaker;
 import hudson.Extension;
-import hudson.model.TopLevelItem;
 import jenkins.model.Jenkins;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.jenkinsci.plugins.database.Database;
 import org.jenkinsci.plugins.database.GlobalDatabaseConfiguration;
-import org.jenkinsci.plugins.database.PerItemDatabase;
-import org.jenkinsci.plugins.database.PerItemDatabaseConfiguration;
 import org.jvnet.hudson.annotation_indexer.Index;
 
 import javax.annotation.CheckForNull;
@@ -19,7 +15,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -35,12 +30,7 @@ public class PersistenceService {
     @Inject
     GlobalDatabaseConfiguration globalDatabaseConfiguration;
 
-    @Inject
-    PerItemDatabaseConfiguration perItemDatabaseConfiguration;
-
-    private final AtomicReference<EMFCache<Database>> globalCache = new AtomicReference<EMFCache<Database>>();
-    private final ConcurrentMap<TopLevelItem,EMFCache<PerItemDatabase>> perItemCache =
-            new MapMaker().weakKeys().makeMap();
+    private final AtomicReference<EMFCache<Database>> globalCache = new AtomicReference<>();
 
     public EntityManagerFactory createEntityManagerFactory(DataSource dataSource, List<Class> classes) {
         return new HibernatePersistenceProvider().createContainerEntityManagerFactory(new PersistenceUnitInfoImpl(
@@ -69,33 +59,6 @@ public class PersistenceService {
                 classes.add(cls);
             // set the new one, and close the old one if any
             close(globalCache.getAndSet(c = new EMFCache<Database>(createEntityManagerFactory(db.getDataSource(), classes), db)));
-        }
-        return c.factory;
-    }
-
-    /**
-     * Obtains a fully configured {@link EntityManagerFactory} for connecting
-     * to {@linkplain PerItemDatabase per-item database} of the specific item.
-     *
-     * @return
-     *      null if there's no global database configured yet.
-     */
-    @CheckForNull
-    public EntityManagerFactory getPerItemEntityManagerFactory(TopLevelItem item) throws SQLException, IOException {
-        PerItemDatabase db = perItemDatabaseConfiguration.getDatabase();
-        if (db==null) {
-            close(perItemCache.get(item));
-            return null;
-        }
-
-        EMFCache<PerItemDatabase> c = perItemCache.get(item);
-        if (c==null || c.cacheKey!=db) {
-            List<Class> classes = new ArrayList<Class>();
-            for (Class cls : Index.list(PerItemTable.class,jenkins.pluginManager.uberClassLoader,Class.class))
-                classes.add(cls);
-            // set the new one, and close the old one if any
-            close(perItemCache.put(item, c = new EMFCache<PerItemDatabase>(
-                    createEntityManagerFactory(db.getDataSource(item), classes), db)));
         }
         return c.factory;
     }
