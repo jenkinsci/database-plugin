@@ -1,2 +1,1 @@
 _extends: .github
-tag-template: database-$NEXT_MINOR_VERSION
