@@ -10,6 +10,7 @@
   <artifactId>database</artifactId>
   <version>${changelist}</version>
   <packaging>hpi</packaging>
+  <name>Database</name>
   <url>https://github.com/jenkinsci/database-plugin</url>
 
   <properties>
