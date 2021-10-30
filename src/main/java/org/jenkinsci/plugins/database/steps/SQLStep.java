@@ -2,31 +2,32 @@ package org.jenkinsci.plugins.database.steps;
 
 import hudson.Extension;
 import hudson.Util;
-import hudson.model.Run;
 import hudson.model.TaskListener;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractSynchronousNonBlockingStepExecution;
-import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
+import org.jenkinsci.plugins.workflow.steps.Step;
+import org.jenkinsci.plugins.workflow.steps.StepContext;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
+import org.jenkinsci.plugins.workflow.steps.StepExecution;
+import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SQLStep extends AbstractStepImpl {
+public class SQLStep extends Step {
   @Extension(optional = true)
   public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl ();
   private static final Logger LOG = Logger.getLogger ( SQLStep.class.getName () );
@@ -62,22 +63,25 @@ public class SQLStep extends AbstractStepImpl {
   }
 
   @Override
+  public StepExecution start(StepContext context) throws Exception {
+    return new Execution(this, context);
+  }
+
+  @Override
   public StepDescriptor getDescriptor () {
     return DESCRIPTOR;
   }
 
-  public static class Execution extends AbstractSynchronousNonBlockingStepExecution<List<Map<String, Object>>> {
+  public static class Execution extends SynchronousNonBlockingStepExecution<List<Map<String, Object>>> {
 
     private static final long serialVersionUID = 1L;
 
-    @StepContextParameter
-    private transient Run build;
-    @StepContextParameter
-    private transient TaskListener taskListener;
-    @StepContextParameter
-    private transient DatabaseContext databaseContext;
-    @Inject
-    private transient SQLStep step;
+    private final transient SQLStep step;
+
+    protected Execution(SQLStep step, @Nonnull StepContext context) {
+      super(context);
+      this.step = step;
+    }
 
 
     @Override
@@ -85,7 +89,7 @@ public class SQLStep extends AbstractStepImpl {
       List<Map<String, Object>> rt = new ArrayList<Map<String, Object>> ();
       LOG.log ( Level.FINE, "Running SQL {0} with parameters {1} on connection {2}",
           new Object[]{ step.sql, step.parameters, step.connection } );
-      Connection connection = databaseContext.getConnection ( step.connection );
+      Connection connection = getContext().get(DatabaseContext.class).getConnection ( step.connection );
 
       PreparedStatement preparedStatement = connection.prepareStatement ( step.sql );
       try {
@@ -110,7 +114,7 @@ public class SQLStep extends AbstractStepImpl {
               try {
                 set.close ();
               } catch ( SQLException e ) {
-                taskListener.error ( "Error closing resultset %s", e );
+                getContext().get(TaskListener.class).error ( "Error closing resultset %s", e );
               }
             }
           }
@@ -120,7 +124,7 @@ public class SQLStep extends AbstractStepImpl {
           try {
             preparedStatement.close ();
           } catch ( SQLException e ) {
-            taskListener.error ( "Error closing statement %s", e );
+            getContext().get(TaskListener.class).error ( "Error closing statement %s", e );
           }
         }
       }
@@ -129,9 +133,13 @@ public class SQLStep extends AbstractStepImpl {
     }
   }
 
-  public static class DescriptorImpl extends AbstractStepDescriptorImpl {
-    public DescriptorImpl () {
-      super ( Execution.class );
+  public static class DescriptorImpl extends StepDescriptor {
+
+    @Override
+    public Set<? extends Class<?>> getRequiredContext() {
+      Set<Class<?>> context = new HashSet<>();
+      Collections.addAll(context, DatabaseContext.class, TaskListener.class);
+      return Collections.unmodifiableSet(context);
     }
 
     @Override

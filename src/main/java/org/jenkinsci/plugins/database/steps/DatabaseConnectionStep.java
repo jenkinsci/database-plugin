@@ -1,30 +1,31 @@
 package org.jenkinsci.plugins.database.steps;
 
 import hudson.Extension;
+import hudson.ExtensionList;
 import hudson.Util;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.TopLevelItem;
 import hudson.util.ListBoxModel;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 import org.jenkinsci.plugins.database.Database;
 import org.jenkinsci.plugins.database.GlobalDatabaseConfiguration;
 import org.jenkinsci.plugins.database.PerItemDatabase;
 import org.jenkinsci.plugins.database.PerItemDatabaseConfiguration;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepDescriptorImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepExecutionImpl;
-import org.jenkinsci.plugins.workflow.steps.AbstractStepImpl;
 import org.jenkinsci.plugins.workflow.steps.BodyExecution;
 import org.jenkinsci.plugins.workflow.steps.BodyExecutionCallback;
+import org.jenkinsci.plugins.workflow.steps.Step;
 import org.jenkinsci.plugins.workflow.steps.StepContext;
-import org.jenkinsci.plugins.workflow.steps.StepContextParameter;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
+import org.jenkinsci.plugins.workflow.steps.StepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
 
 import static java.util.Objects.requireNonNull;
 
-public class DatabaseConnectionStep extends AbstractStepImpl {
+public class DatabaseConnectionStep extends Step {
 
   @Extension(optional = true)
   public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl ();
@@ -42,6 +43,11 @@ public class DatabaseConnectionStep extends AbstractStepImpl {
 
   @DataBoundConstructor
   public DatabaseConnectionStep () {
+  }
+
+  @Override
+  public StepExecution start(StepContext context) throws Exception {
+    return new Execution(this, context);
   }
 
   public DatabaseType getType () {
@@ -67,22 +73,18 @@ public class DatabaseConnectionStep extends AbstractStepImpl {
     return DESCRIPTOR;
   }
 
-  public static class Execution extends AbstractStepExecutionImpl {
+  public static class Execution extends StepExecution {
 
     private static final long serialVersionUID = 1L;
 
-    @StepContextParameter
-    private transient Run<?, ?> build;
-    @StepContextParameter
-    private transient TaskListener taskListener;
-    @Inject
-    private transient DatabaseConnectionStep step;
-    @Inject
-    private transient GlobalDatabaseConfiguration globalDatabaseConfiguration;
-    @Inject
-    private transient PerItemDatabaseConfiguration perItemDatabaseConfiguration;
+    private final transient DatabaseConnectionStep step;
     private transient Connection connection;
     private transient BodyExecution execution;
+
+    public Execution(DatabaseConnectionStep step, @Nonnull StepContext context) {
+      super(context);
+      this.step = step;
+    }
 
     @Override
     public void onResume () {
@@ -113,28 +115,30 @@ public class DatabaseConnectionStep extends AbstractStepImpl {
       }
     }
 
-    private void fetchDatabase () throws FailedToGetDatabaseException {
+    private void fetchDatabase () throws Exception {
       try {
         LOG.log ( Level.FINE, "Fetching database connection of type {0}", step.type );
         switch ( step.type ) {
           default:
           case GLOBAL:
+            final GlobalDatabaseConfiguration globalDatabaseConfiguration = ExtensionList.lookupSingleton(GlobalDatabaseConfiguration.class);
             final Database database = globalDatabaseConfiguration.getDatabase();
             if (database != null) {
               connection = database.getDataSource().getConnection();
             }
             break;
           case PERITEM:
-            if ( build.getParent () instanceof TopLevelItem ) {
+            if ( getContext().get(Run.class).getParent () instanceof TopLevelItem ) {
+              final PerItemDatabaseConfiguration perItemDatabaseConfiguration = ExtensionList.lookupSingleton(PerItemDatabaseConfiguration.class);
               final PerItemDatabase perItemDatabase = perItemDatabaseConfiguration.getDatabase();
               if (perItemDatabase != null) {
-                connection = perItemDatabase.getDataSource((TopLevelItem) build.getParent())
+                connection = perItemDatabase.getDataSource((TopLevelItem) getContext().get(Run.class).getParent())
                         .getConnection();
               }
             } else {
               throw new FailedToGetDatabaseException (
                   "Failed to get per item database build.getParent is not instance of TopLevelItem? " +
-                      build.getParent ().getClass () );
+                      getContext().get(Run.class).getParent ().getClass () );
             }
             break;
         }
@@ -144,14 +148,14 @@ public class DatabaseConnectionStep extends AbstractStepImpl {
       }
     }
 
-    private void closeConnection () {
+    private void closeConnection () throws Exception {
       if ( connection != null ) {
         try {
           LOG.log ( Level.FINE, "Closing database connection" );
           connection.close ();
           connection = null;
         } catch ( SQLException e ) {
-          taskListener.error ( "Failed to close connection %s", e );
+          getContext().get(TaskListener.class).error ( "Failed to close connection %s", e );
         }
       }
     }
@@ -171,9 +175,13 @@ public class DatabaseConnectionStep extends AbstractStepImpl {
 
   }
 
-  public static class DescriptorImpl extends AbstractStepDescriptorImpl {
-    public DescriptorImpl () {
-      super ( Execution.class );
+  public static class DescriptorImpl extends StepDescriptor {
+
+    @Override
+    public Set<? extends Class<?>> getRequiredContext() {
+      Set<Class<?>> context = new HashSet<>();
+      Collections.addAll(context, Run.class, TaskListener.class);
+      return Collections.unmodifiableSet(context);
     }
 
     @Override
