@@ -11,8 +11,8 @@ import org.jenkinsci.plugins.workflow.steps.SynchronousNonBlockingStepExecution;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -78,7 +78,7 @@ public class SQLStep extends Step {
 
     private final transient SQLStep step;
 
-    protected Execution(SQLStep step, @Nonnull StepContext context) {
+    protected Execution(SQLStep step, @NonNull StepContext context) {
       super(context);
       this.step = step;
     }
@@ -147,7 +147,7 @@ public class SQLStep extends Step {
       return "sql";
     }
 
-    @Nonnull
+    @NonNull
     @Override
     public String getDisplayName () {
       return "Run SQL";
