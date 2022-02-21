@@ -8,8 +8,8 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import javax.sql.DataSource;
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
@@ -77,7 +77,7 @@ public class PerItemDatabaseConfiguration extends GlobalConfiguration {
      * If no database has yet been configured, and none is available, the return value will always throw {@link SQLException}.
      * @return the database factory
      */
-    public static @Nonnull PerItemDatabase find() {
+    public static @NonNull PerItemDatabase find() {
         PerItemDatabase database = findOrNull();
         return database != null ? database : new PerItemDatabase() {
             @Override public DataSource getDataSource(TopLevelItem item) throws SQLException {

@@ -9,7 +9,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
-import javax.annotation.Nonnull;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
@@ -44,7 +44,7 @@ public class GenericDatabase extends Database {
         this.password = password;
     }
 
-    @Nonnull
+    @NonNull
     public Integer getInitialSize() {
         return initialSize;
     }
@@ -54,7 +54,7 @@ public class GenericDatabase extends Database {
         this.initialSize = initialSize == null ? DescriptorImpl.defaultInitialSize : initialSize;
     }
 
-    @Nonnull
+    @NonNull
     public Integer getMaxTotal() {
         return maxTotal;
     }
@@ -64,7 +64,7 @@ public class GenericDatabase extends Database {
         this.maxTotal = maxTotal == null ? DescriptorImpl.defaultMaxTotal : maxTotal;
     }
 
-    @Nonnull
+    @NonNull
     public Integer getMaxIdle() {
         return maxIdle;
     }
@@ -74,7 +74,7 @@ public class GenericDatabase extends Database {
         this.maxIdle = maxIdle == null ? DescriptorImpl.defaultMaxIdle : maxIdle;
     }
 
-    @Nonnull
+    @NonNull
     public Integer getMinIdle() {
         return minIdle;
     }

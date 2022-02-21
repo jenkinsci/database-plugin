@@ -5,7 +5,7 @@ import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.CheckForNull;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 
 /**
  * Provides the system-wide {@link Database} that's open for plugins to store arbitrary information.
