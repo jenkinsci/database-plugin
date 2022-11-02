@@ -16,15 +16,15 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/database-plugin</gitHubRepo>
-    <jenkins.version>2.263.1</jenkins.version>
+    <jenkins.version>2.376</jenkins.version>
   </properties>
   
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
-        <artifactId>bom-2.263.x</artifactId>
-        <version>984.vb5eaac999a7e</version>
+        <artifactId>bom-2.361.x</artifactId>
+        <version>1654.vcb_69d035fa_20</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -43,10 +43,6 @@
       <artifactId>hibernate-entitymanager</artifactId>
       <version>5.6.12.Final</version>
       <exclusions>
-        <exclusion>
-          <groupId>antlr</groupId>
-          <artifactId>antlr</artifactId>
-        </exclusion>
         <!-- Provided by javax-activation-api plugin -->
         <exclusion>
           <groupId>javax.activation</groupId>
@@ -68,13 +64,11 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>javax-activation-api</artifactId>
-      <version>1.2.0-3</version> <!-- TODO use version from BOM when possible -->
     </dependency>
 
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>jaxb</artifactId>
-      <version>2.3.6-1</version> <!-- TODO use version from BOM when possible -->
     </dependency>
 
     <dependency>
@@ -115,7 +109,7 @@
   </pluginRepositories>
 
   <scm>
-    <connection>scm:git:git://github.com/${gitHubRepo}.git</connection>
+    <connection>scm:git:https://github.com/${gitHubRepo}.git</connection>
     <developerConnection>scm:git:git@github.com:${gitHubRepo}.git</developerConnection>
     <url>https://github.com/${gitHubRepo}</url>
     <tag>${scmTag}</tag>
