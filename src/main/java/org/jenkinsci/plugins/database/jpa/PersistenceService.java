@@ -8,7 +8,7 @@ import org.jenkinsci.plugins.database.GlobalDatabaseConfiguration;
 import org.jvnet.hudson.annotation_indexer.Index;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.IOException;
