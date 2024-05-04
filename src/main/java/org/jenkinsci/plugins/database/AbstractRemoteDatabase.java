@@ -1,5 +1,6 @@
 package org.jenkinsci.plugins.database;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Util;
 import hudson.util.Secret;
 import java.io.Serializable;
@@ -19,6 +20,7 @@ import org.kohsuke.stapler.QueryParameter;
  *
  * @author Kohsuke Kawaguchi
  */
+@SuppressFBWarnings(value = "PA_PUBLIC_PRIMITIVE_ATTRIBUTE")
 public abstract class AbstractRemoteDatabase extends Database implements Serializable {
 
     private static final long serialVersionUID = 1L;
