@@ -24,7 +24,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-2.426.x</artifactId>
-        <version>2982.vdce2153031a_0</version>
+        <version>3023.v02a_987a_b_3ff9</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -74,8 +74,6 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>byte-buddy-api</artifactId>
-      <!-- To remove when on bom -->
-      <version>1.14.14-3.v944fc399f504</version>
     </dependency>
 
     <dependency>
