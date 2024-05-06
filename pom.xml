@@ -74,8 +74,6 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>byte-buddy-api</artifactId>
-      <!-- To remove when on bom -->
-      <version>1.14.14-3.v944fc399f504</version>
     </dependency>
 
     <dependency>
