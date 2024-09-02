@@ -79,7 +79,7 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
                 throw new SQLException("Invalid properties",e);
             }
 
-            dataSource = JdbcTelemetry.create(GlobalOpenTelemetry.get()).wrap(fac.createDataSource());
+            dataSource = fac.createDataSource();
         }
         if (otelJdbcInstrumentationEnabled.get() && instrumentedDataSource == null) {
             instrumentedDataSource = JdbcTelemetry.create(GlobalOpenTelemetry.get()).wrap(dataSource);

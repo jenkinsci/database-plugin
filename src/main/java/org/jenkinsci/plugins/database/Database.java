@@ -1,5 +1,7 @@
 package org.jenkinsci.plugins.database;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionPoint;
 import hudson.model.AbstractDescribableImpl;
 import io.jenkins.plugins.opentelemetry.api.OpenTelemetryLifecycleListener;
@@ -20,7 +22,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Kohsuke Kawaguchi
  */
 public abstract class Database extends AbstractDescribableImpl<Database> implements ExtensionPoint, OpenTelemetryLifecycleListener {
-    protected final AtomicBoolean otelJdbcInstrumentationEnabled = new AtomicBoolean(false);
+    @NonNull
+    protected AtomicBoolean otelJdbcInstrumentationEnabled = new AtomicBoolean(false);
 
     public abstract DataSource getDataSource() throws SQLException;
 
@@ -32,5 +35,14 @@ public abstract class Database extends AbstractDescribableImpl<Database> impleme
     @Override
     public DatabaseDescriptor getDescriptor() {
         return (DatabaseDescriptor) super.getDescriptor();
+    }
+
+    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
+    protected synchronized Object readResolve() {
+        // backward compatibility
+        if (otelJdbcInstrumentationEnabled == null) {
+            otelJdbcInstrumentationEnabled = new AtomicBoolean(false);
+        }
+        return this;
     }
 }
