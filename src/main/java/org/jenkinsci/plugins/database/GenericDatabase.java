@@ -1,22 +1,22 @@
 package org.jenkinsci.plugins.database;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry;
 import jenkins.model.Jenkins;
 import org.apache.tools.ant.AntClassLoader;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.verb.POST;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
-import org.kohsuke.stapler.verb.POST;
 
 /**
  * {@link Database} implementation that allows the user to specify arbitrary JDBC connection string.
@@ -24,6 +24,7 @@ import org.kohsuke.stapler.verb.POST;
  * @author Kohsuke Kawaguchi
  */
 public class GenericDatabase extends Database {
+
     public final String driver;
     public final String username;
     public final Secret password;
@@ -34,7 +35,8 @@ public class GenericDatabase extends Database {
     private Integer maxIdle = DescriptorImpl.defaultMaxIdle;
     private Integer minIdle = DescriptorImpl.defaultMinIdle;
 
-    private transient DataSource source;
+    private transient DataSource dataSource;
+    private transient DataSource instrumentedDataSource;
 
     @DataBoundConstructor
     public GenericDatabase(String url, String driver, String username, Secret password) {
@@ -86,7 +88,7 @@ public class GenericDatabase extends Database {
 
     @Override
     public synchronized DataSource getDataSource() throws SQLException {
-        if (source==null) {
+        if (dataSource ==null) {
             BasicDataSource2 source = new BasicDataSource2();
             source.setDriverClassLoader(getDescriptor().getClassLoader());
             source.setDriverClassName(driver);
@@ -97,9 +99,12 @@ public class GenericDatabase extends Database {
             source.setMaxTotal(maxTotal);
             source.setMaxIdle(maxIdle);
             source.setMinIdle(minIdle);
-            this.source = source.createDataSource();
+            this.dataSource = source.createDataSource();
         }
-        return source;
+        if (otelJdbcInstrumentationEnabled.get() && instrumentedDataSource == null) {
+            instrumentedDataSource = JdbcTelemetry.create(GlobalOpenTelemetry.get()).wrap(dataSource);
+        }
+        return otelJdbcInstrumentationEnabled.get() ? instrumentedDataSource : dataSource;
     }
 
     @Override
