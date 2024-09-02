@@ -4,8 +4,10 @@ import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.util.FormValidation;
 import hudson.util.Secret;
+import io.jenkins.plugins.opentelemetry.api.ReconfigurableOpenTelemetry;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry;
+import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 import jenkins.model.Jenkins;
 import org.apache.tools.ant.AntClassLoader;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -36,7 +38,6 @@ public class GenericDatabase extends Database {
     private Integer minIdle = DescriptorImpl.defaultMinIdle;
 
     private transient DataSource dataSource;
-    private transient DataSource instrumentedDataSource;
 
     @DataBoundConstructor
     public GenericDatabase(String url, String driver, String username, Secret password) {
@@ -99,12 +100,14 @@ public class GenericDatabase extends Database {
             source.setMaxTotal(maxTotal);
             source.setMaxIdle(maxIdle);
             source.setMinIdle(minIdle);
-            this.dataSource = source.createDataSource();
+
+            if (isOTelJdbcInstrumentationEnabled()) {
+                dataSource = JdbcTelemetry.create(GlobalOpenTelemetry.get()).wrap(source.createDataSource());
+            } else {
+                dataSource = source.createDataSource();
+            }
         }
-        if (otelJdbcInstrumentationEnabled.get() && instrumentedDataSource == null) {
-            instrumentedDataSource = JdbcTelemetry.create(GlobalOpenTelemetry.get()).wrap(dataSource);
-        }
-        return otelJdbcInstrumentationEnabled.get() ? instrumentedDataSource : dataSource;
+        return dataSource;
     }
 
     @Override

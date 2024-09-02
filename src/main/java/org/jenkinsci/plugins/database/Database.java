@@ -1,16 +1,13 @@
 package org.jenkinsci.plugins.database;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionPoint;
 import hudson.model.AbstractDescribableImpl;
-import io.jenkins.plugins.opentelemetry.api.OpenTelemetryLifecycleListener;
+import io.jenkins.plugins.opentelemetry.api.ReconfigurableOpenTelemetry;
 import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * {@link DataSource} configured by the user in Jenkins.
@@ -21,15 +18,26 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class Database extends AbstractDescribableImpl<Database> implements ExtensionPoint, OpenTelemetryLifecycleListener {
-    @NonNull
-    protected AtomicBoolean otelJdbcInstrumentationEnabled = new AtomicBoolean(false);
+public abstract class Database extends AbstractDescribableImpl<Database> implements ExtensionPoint {
 
     public abstract DataSource getDataSource() throws SQLException;
 
-    @Override
-    public void afterConfiguration(ConfigProperties configProperties) {
-        this.otelJdbcInstrumentationEnabled.set(configProperties.getBoolean("otel.instrumentation.jdbc.enabled", false));
+    /**
+     * <p>
+     * Returns true if OpenTelemetry JDBC instrumentation is enabled.
+     * </p>
+     * <p>
+     * Implementations couldn't use {@link io.jenkins.plugins.opentelemetry.api.OpenTelemetryLifecycleListener} to
+     * retrieve the configuration and get configuration changes because it's the {@link DatabaseDescriptor} that should
+     * have implemented the {@link io.jenkins.plugins.opentelemetry.api.OpenTelemetryLifecycleListener} interface and
+     * {@link hudson.model.Descriptor} instances are not available on Jenkins  build agent JVMs, only on the Jenkins
+     * controller.
+     * </p>
+     */
+    protected boolean isOTelJdbcInstrumentationEnabled() {
+        ReconfigurableOpenTelemetry reconfigurableOpenTelemetry = ReconfigurableOpenTelemetry.get();
+        ConfigProperties config = reconfigurableOpenTelemetry.getConfig();
+        return config.getBoolean("otel.instrumentation.jdbc.enabled", false);
     }
 
     @Override
@@ -37,12 +45,4 @@ public abstract class Database extends AbstractDescribableImpl<Database> impleme
         return (DatabaseDescriptor) super.getDescriptor();
     }
 
-    @SuppressFBWarnings("RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE")
-    protected synchronized Object readResolve() {
-        // backward compatibility
-        if (otelJdbcInstrumentationEnabled == null) {
-            otelJdbcInstrumentationEnabled = new AtomicBoolean(false);
-        }
-        return this;
-    }
 }

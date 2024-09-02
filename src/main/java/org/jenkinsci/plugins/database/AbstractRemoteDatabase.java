@@ -3,8 +3,10 @@ package org.jenkinsci.plugins.database;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Util;
 import hudson.util.Secret;
+import io.jenkins.plugins.opentelemetry.api.ReconfigurableOpenTelemetry;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry;
+import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -38,7 +40,6 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
     public final String properties;
 
     private transient DataSource dataSource;
-    private transient DataSource instrumentedDataSource;
 
     public AbstractRemoteDatabase(String hostname, String database, String username, Secret password, String properties) {
         this.hostname = hostname;
@@ -79,11 +80,12 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
                 throw new SQLException("Invalid properties",e);
             }
 
-            dataSource = fac.createDataSource();
+            if (isOTelJdbcInstrumentationEnabled()) {
+                dataSource = JdbcTelemetry.create(GlobalOpenTelemetry.get()).wrap(fac.createDataSource());
+            } else {
+                dataSource = fac.createDataSource();
+            }
         }
-        if (otelJdbcInstrumentationEnabled.get() && instrumentedDataSource == null) {
-            instrumentedDataSource = JdbcTelemetry.create(GlobalOpenTelemetry.get()).wrap(dataSource);
-        }
-        return otelJdbcInstrumentationEnabled.get() ? instrumentedDataSource : dataSource;
+        return dataSource;
     }
 }
