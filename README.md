@@ -113,7 +113,7 @@ public class TestRow {
 }
 ```
 
-# Troubleshooting performance problems with OpenTelemetry and tracing
+## Troubleshooting performance problems with OpenTelemetry and tracing
 
 The Jenkins Database plugin supports OpenTelemetry and tracing to help troubleshoot performance issues. 
 
