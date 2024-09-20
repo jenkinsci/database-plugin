@@ -113,6 +113,22 @@ public class TestRow {
 }
 ```
 
+## Troubleshooting performance problems with OpenTelemetry and tracing
+
+The Jenkins Database plugin supports OpenTelemetry and tracing to help troubleshoot performance issues. 
+
+To enable tracing, you need to: 
+* Install the [OpenTelemetry plugin](https://plugins.jenkins.io/opentelemetry/) and configure it
+* Navigate to the "advanced" section of the Jenkins OpenTelemetry Plugin and set in the "Configuration properties" :
+  * `otel.instrumentation.jdbc.enabled=true` to enable tracing in the Datasource provided by the Jenkins Database Plugin 
+  * `otel.instrumentation.jenkins.agent.enabled=true` to activate tracing in the Jenkins build agents if database calls are executed from the build agents 
+
+Note that changes to the `otel.instrumentation.jdbc.enabled` require to restart the Jenkins Controller and build agents.
+
+Example database call span produced by the Jenkins JUnit SQL Storage plugin:
+
+<img alt="Jenkins pipeline trace with a JDBC span in Grafana" src="resources/images/screenshot-jenkins-pipeline-trace-with-jdbc-span.png" width="250px">
+
 ## Developing driver plugin
 
 [MySQL Database

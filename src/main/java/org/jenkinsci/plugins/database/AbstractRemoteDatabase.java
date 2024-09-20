@@ -3,16 +3,19 @@ package org.jenkinsci.plugins.database;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Util;
 import hudson.util.Secret;
-import java.io.Serializable;
-import org.kohsuke.stapler.DataBoundConstructor;
+import io.jenkins.plugins.opentelemetry.api.ReconfigurableOpenTelemetry;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry;
+import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
+import org.kohsuke.stapler.DataBoundSetter;
+import org.kohsuke.stapler.QueryParameter;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.Driver;
 import java.sql.SQLException;
 import java.util.Map;
-import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.QueryParameter;
 
 /**
  * Partial default implementation for typical JDBC connector that talks to a remote server
@@ -36,7 +39,7 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
 
     public final String properties;
 
-    private transient DataSource source;
+    private transient DataSource dataSource;
 
     public AbstractRemoteDatabase(String hostname, String database, String username, Secret password, String properties) {
         this.hostname = hostname;
@@ -61,7 +64,7 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
 
     @Override
     public synchronized DataSource getDataSource() throws SQLException {
-        if (source==null) {
+        if (dataSource ==null) {
             BasicDataSource2 fac = new BasicDataSource2();
             fac.setDriverClass(getDriverClass());
             fac.setUrl(getJdbcUrl());
@@ -77,8 +80,12 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
                 throw new SQLException("Invalid properties",e);
             }
 
-            source = fac.createDataSource();
+            if (isOTelJdbcInstrumentationEnabled()) {
+                dataSource = JdbcTelemetry.create(GlobalOpenTelemetry.get()).wrap(fac.createDataSource());
+            } else {
+                dataSource = fac.createDataSource();
+            }
         }
-        return source;
+        return dataSource;
     }
 }
