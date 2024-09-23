@@ -18,7 +18,7 @@
     <gitHubRepo>jenkinsci/database-plugin</gitHubRepo>
     <jenkins.version>2.440.3</jenkins.version>
 
-    <jenkins.opentelemetry-api.version>1.40.0-32.v65c59076e638</jenkins.opentelemetry-api.version>
+    <jenkins.opentelemetry-api.version>1.40.0-36.v1e02b_b_4db_8f4</jenkins.opentelemetry-api.version>
     <opentelemetry-instrumentation.version>2.6.0</opentelemetry-instrumentation.version>
   </properties>
   
