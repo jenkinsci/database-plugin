@@ -6,7 +6,7 @@ import jenkins.model.GlobalConfiguration;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -61,7 +61,7 @@ public class PerItemDatabaseConfiguration extends GlobalConfiguration {
         this.database = database;
     }
 
-    @Override public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+    @Override public boolean configure(StaplerRequest2 req, JSONObject json) throws FormException {
         req.bindJSON(this, json);
         save();
         return true;

@@ -5,7 +5,7 @@ import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.database.Database;
 import org.jvnet.hudson.test.TestExtension;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 /**
  * Example of how to define a configuration that involves database.
@@ -43,7 +43,7 @@ public class Sample extends GlobalConfiguration {
      * (That is, update the {@link #database} field.
      */
     @Override
-    public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+    public boolean configure(StaplerRequest2 req, JSONObject json) throws FormException {
         req.bindJSON(this,json);
         save();
         return true;

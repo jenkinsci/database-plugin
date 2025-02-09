@@ -18,11 +18,11 @@ l.layout{
             }
         }
 
-        if (request.getAttribute("message")!=null) {
+        if (request2.getAttribute("message")!=null) {
             p(message)
         }
 
-        if (request.getAttribute("r")!=null) {
+        if (request2.getAttribute("r")!=null) {
             // renders the result
             h2("Result")
             table {
