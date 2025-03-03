@@ -19,7 +19,7 @@
     <jenkins.baseline>2.479</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.1</jenkins.version>
 
-    <jenkins.opentelemetry-api.version>1.43.0-38.v1a_9b_53e3f70f</jenkins.opentelemetry-api.version>
+    <jenkins.opentelemetry-api.version>1.44.1.40.v93f5f8ca_42c3</jenkins.opentelemetry-api.version>
     <opentelemetry-instrumentation.version>2.6.0</opentelemetry-instrumentation.version>
   </properties>
   
