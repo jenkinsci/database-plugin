@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>5.27</version>
+    <version>5.28</version>
     <relativePath />
   </parent>
 
@@ -16,11 +16,10 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/database-plugin</gitHubRepo>
-    <jenkins.baseline>2.479</jenkins.baseline>
+    <jenkins.baseline>2.504</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
 
-    <jenkins.opentelemetry-api.version>1.49.0.77.va_c69ec2472c0</jenkins.opentelemetry-api.version>
-    <opentelemetry-instrumentation.version>2.6.0</opentelemetry-instrumentation.version>
+    <opentelemetry-instrumentation.version>2.15.0</opentelemetry-instrumentation.version>
   </properties>
   
   <dependencyManagement>
@@ -28,7 +27,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-${jenkins.baseline}.x</artifactId>
-        <version>5054.v620b_5d2b_d5e6</version>
+        <version>5622.vc9c3051619f5</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
@@ -110,7 +109,6 @@
     <dependency>
       <groupId>io.jenkins.plugins</groupId>
       <artifactId>opentelemetry-api</artifactId>
-      <version>${jenkins.opentelemetry-api.version}</version>
     </dependency>
     <dependency>
       <groupId>io.opentelemetry.instrumentation</groupId>
