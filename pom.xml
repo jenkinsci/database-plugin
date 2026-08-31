@@ -16,7 +16,7 @@
   <properties>
     <changelist>999999-SNAPSHOT</changelist>
     <gitHubRepo>jenkinsci/database-plugin</gitHubRepo>
-    <jenkins.baseline>2.504</jenkins.baseline>
+    <jenkins.baseline>2.555</jenkins.baseline>
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
 
     <opentelemetry-instrumentation.version>2.15.0</opentelemetry-instrumentation.version>
@@ -27,7 +27,7 @@
       <dependency>
         <groupId>io.jenkins.tools.bom</groupId>
         <artifactId>bom-${jenkins.baseline}.x</artifactId>
-        <version>5983.v443959746f1f</version>
+        <version>6931.vea_a_b_c6fd017d</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>
