@@ -95,7 +95,7 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
     }
 
     /**
-     * Adjusts {@link BasicDataSource#setMaxIdle(int)} on the pool backing {@link #getDataSource()},
+     * Adjusts {@link BasicDataSource2#setMaxIdle(int)} on the pool backing {@link #getDataSource()},
      * and immediately closes every connection already idle (rather than waiting for the next
      * connection to be returned, or for background eviction, to notice the new, possibly lower,
      * limit).
