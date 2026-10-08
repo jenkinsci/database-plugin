@@ -23,6 +23,24 @@ public abstract class Database extends AbstractDescribableImpl<Database> impleme
     public abstract DataSource getDataSource() throws SQLException;
 
     /**
+     * Adjusts how many idle connections the pool backing {@link #getDataSource()} is allowed to keep
+     * open, and closes any connection already idle beyond that count.
+     *
+     * <p>Useful for a short-lived process (e.g. a build agent JVM) that only occasionally uses this
+     * data source and would otherwise hold pooled connections open on the database for its whole
+     * lifetime, even though it never reuses them. Has no effect until {@link #getDataSource()} has
+     * been called at least once.
+     *
+     * <p>No-op by default; overridden by implementations backed by a connection pool whose idle
+     * connections can actually be tuned.
+     *
+     * @param maxIdle the new maximum number of idle connections to keep pooled
+     */
+    public void setMaxIdleConnections(int maxIdle) throws SQLException {
+        // no-op by default
+    }
+
+    /**
      * <p>
      * Returns true if OpenTelemetry JDBC instrumentation is enabled.
      * </p>

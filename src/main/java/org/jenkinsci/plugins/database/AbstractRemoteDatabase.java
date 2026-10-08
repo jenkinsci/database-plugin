@@ -7,6 +7,8 @@ import io.jenkins.plugins.opentelemetry.api.ReconfigurableOpenTelemetry;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.instrumentation.jdbc.datasource.JdbcTelemetry;
 import io.opentelemetry.sdk.autoconfigure.spi.ConfigProperties;
+import org.apache.commons.dbcp2.PoolableConnection;
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 
@@ -39,6 +41,8 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
 
     public final String properties;
 
+    // package-private rather than private so tests in this package can inspect pool state directly
+    transient BasicDataSource2 dataSourceFactory;
     private transient DataSource dataSource;
 
     public AbstractRemoteDatabase(String hostname, String database, String username, Secret password, String properties) {
@@ -64,7 +68,7 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
 
     @Override
     public synchronized DataSource getDataSource() throws SQLException {
-        if (dataSource ==null) {
+        if (dataSource == null) {
             BasicDataSource2 fac = new BasicDataSource2();
             fac.setDriverClass(getDriverClass());
             fac.setUrl(getJdbcUrl());
@@ -80,6 +84,7 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
                 throw new SQLException("Invalid properties",e);
             }
 
+            dataSourceFactory = fac;
             if (isOTelJdbcInstrumentationEnabled()) {
                 dataSource = JdbcTelemetry.create(GlobalOpenTelemetry.get()).wrap(fac.createDataSource());
             } else {
@@ -87,5 +92,21 @@ public abstract class AbstractRemoteDatabase extends Database implements Seriali
             }
         }
         return dataSource;
+    }
+
+    /**
+     * Adjusts {@link BasicDataSource#setMaxIdle(int)} on the pool backing {@link #getDataSource()},
+     * and immediately closes every connection already idle (rather than waiting for the next
+     * connection to be returned, or for background eviction, to notice the new, possibly lower,
+     * limit).
+     */
+    @Override
+    public synchronized void setMaxIdleConnections(int maxIdle) throws SQLException {
+        getDataSource();
+        dataSourceFactory.setMaxIdle(maxIdle);
+        GenericObjectPool<PoolableConnection> pool = dataSourceFactory.getConnectionPool();
+        if (pool != null) {
+            pool.clear();
+        }
     }
 }
