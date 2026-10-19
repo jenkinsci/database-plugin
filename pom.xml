@@ -20,6 +20,7 @@
     <jenkins.version>${jenkins.baseline}.3</jenkins.version>
 
     <opentelemetry-instrumentation.version>2.15.0</opentelemetry-instrumentation.version>
+    <ban-junit4-imports.skip>false</ban-junit4-imports.skip>
   </properties>
   
   <dependencyManagement>
